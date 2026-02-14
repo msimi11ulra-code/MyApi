@@ -10,7 +10,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// 3. Configure Entity Framework Core with SQL Server
+// 3. Configure Entity Framework Core with PostgreSQL
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
@@ -28,6 +28,7 @@ builder.Services.AddCors(options =>
 // 5. Configure Render port
 var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
 builder.WebHost.UseUrls($"http://*:{port}");
+builder.Services.AddAuthentication();
 
 var app = builder.Build();
 
@@ -38,16 +39,15 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+// ❌ نعلّق HTTPS Redirection لأنه يسبب مشاكل في Render
+// app.UseHttpsRedirection();
 
-// Apply CORS Policy
 app.UseCors("AllowAll");
 
 app.UseAuthorization();
 
 app.MapControllers();
 
-// Optional: Add a root endpoint to test if the app is running
 app.MapGet("/", () => "Hello from MyApi!");
 
 app.Run();
