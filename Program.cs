@@ -50,4 +50,17 @@ app.MapControllers();
 
 app.MapGet("/", () => "Hello from MyApi!");
 
+app.MapGet("/test", async (AppDbContext db) =>
+{
+    try
+    {
+        var count = await db.Products.CountAsync();
+        return Results.Ok($"Products count: {count}");
+    }
+    catch (Exception ex)
+    {
+        return Results.Problem(ex.Message);
+    }
+});
+
 app.Run();
